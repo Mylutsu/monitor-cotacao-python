@@ -4,10 +4,40 @@
     <meta charset="UTF-8">
     <title>Meu Monitor de Moedas</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f4f4; text-align: center; padding: 50px; }
-        .card { background: white; padding: 20px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h1 { color: #333; }
-        .moeda { font-size: 1.2em; margin: 10px 0; color: #007bff; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #121212; /* Fundo Escuro (Dark Mode) */
+            color: white; 
+            text-align: center; 
+            padding: 50px; 
+        }
+        .card { 
+            background: #1e1e1e; 
+            padding: 30px; 
+            border-radius: 15px; 
+            display: inline-block; 
+            border: 1px solid #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+        }
+        h1 { color: #00ff88; margin-bottom: 30px; }
+        .moeda { 
+            font-size: 1.4em; 
+            margin: 15px 0; 
+            padding: 10px;
+            border-bottom: 1px solid #333;
+        }
+        strong { color: #00d4ff; }
+        button {
+            background: #00ff88;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+        button:hover { background: #00cc6e; transform: scale(1.05); }
     </style>
 </head>
 <body>
@@ -20,6 +50,28 @@
         <div class="moeda">Bitcoin: <strong>R$ {{ moedas.btc }}</strong></div>
 
         <button onclick="window.location.reload()">Atualizar Agora</button>
+    </div>
+
+    <div class="card" style="margin-top: 20px; display: block;">
+        <h3>Histórico Recente (SQL)</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 2px solid #00ff88;">
+                    <th>Moeda</th>
+                    <th>Valor</th>
+                    <th>Data/Hora</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in lista %}
+                <tr style="border-bottom: 1px solid #333;">
+                    <td>{{ item[0] }}</td>
+                    <td>R$ {{ item[1] }}</td>
+                    <td style="font-size: 0.8em;">{{ item[2] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
 </body>
