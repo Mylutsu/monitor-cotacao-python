@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Meu Monitor de Moedas</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f4; text-align: center; padding: 50px; }
+        .card { background: white; padding: 20px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        .moeda { font-size: 1.2em; margin: 10px 0; color: #007bff; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>Cotações Atuais</h1>
+        
+        <div class="moeda">Dólar: <strong>R$ {{ moedas.dolar }}</strong></div>
+        <div class="moeda">Euro: <strong>R$ {{ moedas.euro }}</strong></div>
+        <div class="moeda">Bitcoin: <strong>R$ {{ moedas.btc }}</strong></div>
+
+        <button onclick="window.location.reload()">Atualizar Agora</button>
+    </div>
+
+</body>
+</html>

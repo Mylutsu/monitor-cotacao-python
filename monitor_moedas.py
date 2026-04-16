@@ -24,8 +24,8 @@ def consultar_cotacao():
         print(f"BTC:   R$ {float(btc):.2f}")
         print("-" * 30)
 
-    except Exception as e:
-        print(f"Ops, algo deu errado: {e}")
+    except Exception as erro:
+        print(f"Ops, algo deu errado: {erro}")
 
 if __name__ == "__main__":
     consultar_cotacao()
