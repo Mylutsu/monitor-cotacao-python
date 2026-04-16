@@ -1,11 +1,12 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for # Adicionamos redirect e url_for
 import requests
-import sqlite3 # Importamos o banco aqui também
+import sqlite3
 
 app = Flask(__name__)
 
+# --- FUNÇÕES DE BANCO DE DADOS ---
+
 def salvar_no_banco(moeda, valor):
-    """Função para INSERIR (Create) dados no SQL"""
     conn = sqlite3.connect('historico_moedas.db')
     cursor = conn.cursor()
     cursor.execute("INSERT INTO cotacoes (moeda, valor) VALUES (?, ?)", (moeda, valor))
@@ -13,38 +14,53 @@ def salvar_no_banco(moeda, valor):
     conn.close()
 
 def buscar_historico():
-    """Função para LER (Read) os últimos 5 registros"""
     conn = sqlite3.connect('historico_moedas.db')
     cursor = conn.cursor()
-    # SQL para pegar os últimos 5 registros do mais novo para o mais antigo
-    cursor.execute("SELECT moeda, valor, data FROM cotacoes ORDER BY data DESC LIMIT 5")
+    cursor.execute("SELECT moeda, valor, data FROM cotacoes ORDER BY data DESC LIMIT 10")
     dados = cursor.fetchall()
     conn.close()
     return dados
 
-def pegar_cotacoes():
+def excluir_todos_dados():
+    """Função para APAGAR (Delete) os registros da tabela"""
+    conn = sqlite3.connect('historico_moedas.db')
+    cursor = conn.cursor()
+    # O comando DELETE apaga os registros. Sem o 'WHERE', ele limpa a tabela toda.
+    cursor.execute("DELETE FROM cotacoes")
+    conn.commit()
+    conn.close()
+
+# --- ROTAS DO SITE ---
+
+@app.route('/')
+def index():
+    # Mantivemos a lógica anterior
     url = "https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL,BTC-BRL"
     try:
         requisicao = requests.get(url)
         dados = requisicao.json()
         
-        # Salvando as cotações no banco de dados toda vez que atualiza
+        # Salva no banco e prepara para exibir
         salvar_no_banco("Dólar", float(dados['USDBRL']['bid']))
         salvar_no_banco("Euro", float(dados['EURBRL']['bid']))
         
-        return {
+        cotacoes = {
             "dolar": f"{float(dados['USDBRL']['bid']):.2f}",
             "euro": f"{float(dados['EURBRL']['bid']):.2f}",
             "btc": f"{float(dados['BTCBRL']['bid']):.2f}"
         }
     except:
-        return None
+        cotacoes = None
 
-@app.route('/')
-def index():
-    cotacoes = pegar_cotacoes()
-    historico = buscar_historico() # Buscamos a lista do banco
+    historico = buscar_historico()
     return render_template('index.html', moedas=cotacoes, lista=historico)
+
+@app.route('/limpar')
+def limpar():
+    """Rota que chama a exclusão e volta para a página inicial"""
+    excluir_todos_dados()
+    # redirect(url_for('index')) faz o navegador voltar para a função 'index'
+    return redirect(url_for('index'))
 
 if __name__ == "__main__":
     app.run(debug=True)
