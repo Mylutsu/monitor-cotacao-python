@@ -79,6 +79,15 @@
                     <td>{{ item[0] }}</td>
                     <td>R$ {{ item[1] }}</td>
                     <td style="font-size: 0.8em;">{{ item[2] }}</td>
+                    
+                    <td>
+                        <form action="/editar/{{ item[4] }}" method="POST" style="display: flex;">
+                            <input type="text" name="anotacao" placeholder="Nota..." 
+                                value="{{ item[3] if item[3] else '' }}" 
+                                style="background: #333; color: white; border: 1px solid #444; border-radius: 3px; padding: 2px;">
+                            <button type="submit" style="margin: 0 0 0 5px; padding: 2px 5px; font-size: 0.7em; background: #00d4ff;">💾</button>
+                        </form>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

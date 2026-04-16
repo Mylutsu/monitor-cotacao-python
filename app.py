@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for # Adicionamos redirect e url_for
+from flask import Flask, render_template, redirect, url_for, request # Adicionamos 'request'
 import requests
 import sqlite3
 
@@ -16,7 +16,8 @@ def salvar_no_banco(moeda, valor):
 def buscar_historico():
     conn = sqlite3.connect('historico_moedas.db')
     cursor = conn.cursor()
-    cursor.execute("SELECT moeda, valor, data FROM cotacoes ORDER BY data DESC LIMIT 10")
+    # Adicionamos 'id' e 'observacao' na consulta
+    cursor.execute("SELECT moeda, valor, data, observacao, id FROM cotacoes ORDER BY data DESC LIMIT 10")
     dados = cursor.fetchall()
     conn.close()
     return dados
@@ -27,6 +28,15 @@ def excluir_todos_dados():
     cursor = conn.cursor()
     # O comando DELETE apaga os registros. Sem o 'WHERE', ele limpa a tabela toda.
     cursor.execute("DELETE FROM cotacoes")
+    conn.commit()
+    conn.close()
+
+def atualizar_observacao(id_registro, texto):
+    """Função para ATUALIZAR (Update) um dado específico"""
+    conn = sqlite3.connect('historico_moedas.db')
+    cursor = conn.cursor()
+    # Usamos o WHERE id = ? para garantir que só editaremos UMA linha específica
+    cursor.execute("UPDATE cotacoes SET observacao = ? WHERE id = ?", (texto, id_registro))
     conn.commit()
     conn.close()
 
@@ -60,6 +70,14 @@ def limpar():
     """Rota que chama a exclusão e volta para a página inicial"""
     excluir_todos_dados()
     # redirect(url_for('index')) faz o navegador voltar para a função 'index'
+    return redirect(url_for('index'))
+
+@app.route('/editar/<int:id>', methods=['POST'])
+def editar(id):
+    """Rota que recebe o formulário e atualiza o banco"""
+    # Pegamos o texto que o usuário digitou no campo 'anotacao' do HTML
+    novo_texto = request.form.get('anotacao')
+    atualizar_observacao(id, novo_texto)
     return redirect(url_for('index'))
 
 if __name__ == "__main__":
